@@ -18,13 +18,13 @@ namespace Domain.Services
 
         public async Task AddProduct(Product product)
         {
-            var validName = product.ValidatePropertyString(product.Name, "Name");
+            var validName = product.ValidatePropertyString(product.Nome, "Name");
 
-            var validValue = product.ValidatePropertyDecimal(product.Value, "Value");
+            var validValue = product.ValidatePropertyDecimal(product.Valor, "Value");
 
             if (validName && validValue)
             {
-                product.State = true;
+                product.Estado = true;
 
                 await _product.Add(product);
             }
@@ -33,9 +33,9 @@ namespace Domain.Services
 
         public async Task UpdateProduct(Product product)
         {
-            var validName = product.ValidatePropertyString(product.Name, "Name");
+            var validName = product.ValidatePropertyString(product.Nome, "Name");
 
-            var validValue = product.ValidatePropertyDecimal(product.Value, "Value");
+            var validValue = product.ValidatePropertyDecimal(product.Valor, "Value");
 
             if (validName && validValue)
             {
