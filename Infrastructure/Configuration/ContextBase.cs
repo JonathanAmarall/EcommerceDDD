@@ -9,8 +9,9 @@ namespace Infrastructure.Configuration
 {
     public class ContextBase : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Product> products { get; set; }
-        public DbSet<CompraUsuario> compraUsuario { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<CompraUsuario> CompraUsuario { get; set; }
+        public DbSet<IdentityUser> IdentityUser { get; set; }
 
         public ContextBase(DbContextOptions<ContextBase> options) : base(options)
         {
