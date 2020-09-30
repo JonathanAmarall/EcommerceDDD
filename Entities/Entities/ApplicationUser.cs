@@ -44,6 +44,6 @@ namespace Entities.Entities
         [Display(Name = "Estado")]
         public bool Estado { get; set; }
 
-        public TipoUsuario Tipo { get; set; }
+        public TipoUsuario? Tipo { get; set; }
     }
 }

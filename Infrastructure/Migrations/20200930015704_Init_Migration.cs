@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Init_Migration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,26 +40,22 @@ namespace Infrastructure.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
+                    CPF = table.Column<string>(maxLength: 50, nullable: true),
+                    Idade = table.Column<int>(nullable: true),
+                    Nome = table.Column<string>(maxLength: 255, nullable: true),
+                    CEP = table.Column<string>(maxLength: 15, nullable: true),
+                    Endereco = table.Column<string>(maxLength: 255, nullable: true),
+                    ComplementoEndereco = table.Column<string>(maxLength: 450, nullable: true),
+                    Celular = table.Column<string>(maxLength: 20, nullable: true),
+                    Telefone = table.Column<string>(maxLength: 20, nullable: true),
+                    Estado = table.Column<bool>(nullable: true),
+                    Tipo = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "products",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(nullable: true),
-                    Value = table.Column<decimal>(nullable: false),
-                    State = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -168,6 +164,63 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nome = table.Column<string>(maxLength: 255, nullable: true),
+                    Descricao = table.Column<string>(maxLength: 150, nullable: true),
+                    Observacao = table.Column<string>(maxLength: 20000, nullable: true),
+                    Valor = table.Column<decimal>(nullable: false),
+                    QtdEstoque = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    Estado = table.Column<bool>(nullable: false),
+                    DataCadastro = table.Column<DateTime>(nullable: false),
+                    DataAlteracao = table.Column<DateTime>(nullable: false),
+                    Url = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompraUsuario",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdProduto = table.Column<int>(nullable: false),
+                    ProdutoId = table.Column<int>(nullable: true),
+                    Estado = table.Column<int>(nullable: false),
+                    QtdCompra = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompraUsuario", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompraUsuario_Products_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompraUsuario_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -204,6 +257,21 @@ namespace Infrastructure.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompraUsuario_ProdutoId",
+                table: "CompraUsuario",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompraUsuario_UserId",
+                table: "CompraUsuario",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_UserId",
+                table: "Products",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -224,10 +292,13 @@ namespace Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "products");
+                name: "CompraUsuario");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
