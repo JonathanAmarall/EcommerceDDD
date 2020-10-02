@@ -30,7 +30,7 @@ namespace Web_Ecommerce.Controllers
 
 
             var products = await _InterfaceProductApp.List();
-            return View(await _InterfaceProductApp.ListProductFromUser(userId);
+            return View(await _InterfaceProductApp.ListProductFromUser(userId));
         }
 
         // GET: Produtos/Details/5
