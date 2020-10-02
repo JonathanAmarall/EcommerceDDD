@@ -6,6 +6,7 @@ using ApplicationApp.Interfaces;
 using Entities.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web_Ecommerce.Controllers
@@ -13,16 +14,23 @@ namespace Web_Ecommerce.Controllers
     [Authorize]
     public class ProdutosController : Controller
     {
+        public readonly UserManager<ApplicationUser> _userManager;
         public readonly IInterfaceProductApp _InterfaceProductApp;
-        public ProdutosController(IInterfaceProductApp interfaceProductApp)
+        public ProdutosController(
+            IInterfaceProductApp interfaceProductApp,
+            UserManager<ApplicationUser> userManager)
         {
             _InterfaceProductApp = interfaceProductApp;
+            _userManager = userManager;
         }
         // GET: Produtos
         public async Task<IActionResult> Index()
         {
+            var userId = await SessionUserId();
+
+
             var products = await _InterfaceProductApp.List();
-            return View(products);
+            return View(await _InterfaceProductApp.ListProductFromUser(userId);
         }
 
         // GET: Produtos/Details/5
@@ -46,6 +54,9 @@ namespace Web_Ecommerce.Controllers
         {
             try
             {
+                var userId = await SessionUserId();
+
+                product.UserId = userId;
                 // TODO: Add insert logic here
                 await _InterfaceProductApp.AddProduct(product);
 
@@ -56,13 +67,13 @@ namespace Web_Ecommerce.Controllers
                         ModelState.AddModelError(item.PropertyName, item.Message);
                     }
 
-                    return View("Edit", product);
+                    return View("Create", product);
                 }
 
             }
             catch
             {
-                return View("Edit", product);
+                return View("Create", product);
             }
 
             return RedirectToAction(nameof(Index));
@@ -130,6 +141,13 @@ namespace Web_Ecommerce.Controllers
             {
                 return View();
             }
+        }
+
+        private async Task<string> SessionUserId()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            return user.Id; ;
         }
     }
 }
