@@ -149,5 +149,15 @@ namespace Web_Ecommerce.Controllers
 
             return user.Id; ;
         }
+    
+        [AllowAnonymous]
+        [HttpGet("/api/v1/ListProductWithStock")]
+        public async Task<JsonResult> ListProductWithStock()
+        {
+            return Json(await _InterfaceProductApp.ListProductsFromStock());
+        }
+    
+    
+    
     }
 }

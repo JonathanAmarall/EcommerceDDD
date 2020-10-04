@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,19 @@ namespace Infrastructure.Repository.Repositories
                 return products;
             }
 
+        }
+
+        public async Task<List<Product>> ListProductsFromStock(Expression<Func<Product, bool>> exProduct)
+        {
+            using (var context = new ContextBase(_optionsBuilder))
+            {
+                var products = await context.Products
+                        .Where(exProduct)
+                        .AsNoTracking()
+                        .ToListAsync();
+
+                return products;
+            }
         }
     }
 }
